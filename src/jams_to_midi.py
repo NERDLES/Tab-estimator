@@ -9,10 +9,10 @@ import yaml
 
 
 def main(note_resolution):
-    jams_file_path = os.path.join("GuitarSet", "annotation", "*")
+    jams_file_path = os.path.join("..\\GuitarSet", "annotation", "*")
     jams_filename_list = glob.glob(jams_file_path)
     jams_filename_list.sort()
-    midi_dir = os.path.join("data", "midi")
+    midi_dir = os.path.join("..\\data", "midi")
     midi_dir_original = os.path.join(midi_dir, "original")
     midi_dir_quantized = os.path.join(
         midi_dir, f"auto_quantized_{note_resolution}")
@@ -41,7 +41,7 @@ def main(note_resolution):
 
 
 if __name__ == "__main__":
-    with open("src/config.yaml") as f:
+    with open("config.yaml") as f:
         obj = yaml.safe_load(f)
         note_resolution = obj["note_resolution"]
     main(note_resolution)

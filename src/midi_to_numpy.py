@@ -41,8 +41,8 @@ def process_cqt(data, sr_original, **kwargs):
 
     data = data.astype(float)
     data = librosa.util.normalize(data)
-    data = librosa.resample(data, sr_original, down_sampling_rate)
-    data = np.abs(librosa.cqt(data,
+    data = librosa.resample(y=data, orig_sr=sr_original, target_sr=down_sampling_rate)
+    data = np.abs(librosa.cqt(y=data,
                               hop_length=hop_length,
                               sr=down_sampling_rate,
                               n_bins=n_bins,
@@ -55,8 +55,8 @@ def process_mel_spec(data, sr_original, **kwargs):
     hop_length = kwargs["hop_length"]
     data = data.astype(float)
     data = librosa.util.normalize(data)
-    data = librosa.resample(data, sr_original, down_sampling_rate)
-    data = np.abs(librosa.feature.melspectrogram(data,
+    data = librosa.resample(y=data, orig_sr=sr_original, target_sr=down_sampling_rate)
+    data = np.abs(librosa.feature.melspectrogram(y=data,
                                                  sr=down_sampling_rate,
                                                  n_fft=2048,
                                                  hop_length=hop_length))
@@ -72,10 +72,10 @@ def main(midi_filename_list, kwargs):
     if "auto_quantized" in midi_filename_list[0]:
         npz_dir = os.path.join(
             "data", "npz", f"auto_quantized_{note_resolution}")
-        audio_dir = os.path.join("data", "wav", "auto_quantized_16")
+        audio_dir = os.path.join("..\\data", "wav", "auto_quantized_16")
     elif "original" in midi_filename_list[0]:
-        npz_dir = os.path.join("data", "npz", "original")
-        audio_dir = os.path.join("GuitarSet", "audio_mono-mic")
+        npz_dir = os.path.join("..\\data", "npz", "original")
+        audio_dir = os.path.join("..\\GuitarSet", "audio_mono-mic")
     else:
         print("error")
 
@@ -302,7 +302,7 @@ def split_save(npz_path, cqt, mel_spec, tab, tab_onset, frame_tab, frame_tab_ons
 
 
 if __name__ == "__main__":
-    with open("src/config.yaml") as f:
+    with open("config.yaml") as f:
         obj = yaml.safe_load(f)
         note_resolution = obj["note_resolution"]
         down_sampling_rate = obj["down_sampling_rate"]
@@ -319,13 +319,13 @@ if __name__ == "__main__":
         "hop_length": hop_length
     }
 
-    midi_dir = os.path.join("data", "midi")
+    midi_dir = os.path.join("..\\data", "midi")
     # auto quantized
     #npz_dir = os.path.join("data", "npz", f"auto_quantized_{note_resolution}")
     #midi_file_path = os.path.join(midi_dir, f"auto_quantized_{note_resolution}", "*")
 
     # original
-    npz_dir = os.path.join("data", "npz", "original")
+    npz_dir = os.path.join("..\\data", "npz", "original")
     midi_file_path = os.path.join(midi_dir, "original", "*")
 
     midi_filename_list = glob.glob(midi_file_path)
@@ -342,5 +342,5 @@ if __name__ == "__main__":
     # check for missing file
     for midi_filename in midi_filename_list:
         name = os.path.split(midi_filename)[1][:-4]
-        if not os.path.exists("data/npz/original/" + name + ".npz"):
+        if not os.path.exists("..\\data\\npz\\original\\" + name + ".npz"):
             print(f"{name} does not exist!")

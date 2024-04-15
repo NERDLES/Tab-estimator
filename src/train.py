@@ -325,12 +325,12 @@ def train(mode, input_feature_type, encoder_type, use_custom_decimation_func, us
 
 def main(mode, input_feature_type, encoder_type, use_custom_decimation_func, use_conv_stack, use_galoss, train_ratio, note_resolution, epoch, lr, seed_, d_model, encoder_heads, encoder_layers, n_cores, cqt_n_bins, hop_length, sr):
     data_path = os.path.join(
-        "data", "npz", f"original", "split", "*.npz")
+        "..\\data", "npz", f"original", "split", "*.npz")
     data_list = np.array(glob.glob(data_path, recursive=True))
 
     now = datetime.datetime.now()
-    tensorboard_dir = os.path.join("tensorboard", "{0:%Y%m%d%H%M}".format(now))
-    model_dir = os.path.join("model", "{0:%Y%m%d%H%M}".format(now))
+    tensorboard_dir = os.path.join("..\\tensorboard", "{0:%Y%m%d%H%M}".format(now))
+    model_dir = os.path.join("..\\model", "{0:%Y%m%d%H%M}".format(now))
     os.makedirs(model_dir)
 
     if input_feature_type == "cqt":
@@ -338,7 +338,7 @@ def main(mode, input_feature_type, encoder_type, use_custom_decimation_func, use
     elif input_feature_type == "melspec":
         n_bins = 128
 
-    shutil.copyfile("src/config.yaml", model_dir + "/config.yaml")
+    shutil.copyfile("config.yaml", model_dir + "/config.yaml")
 
     if torch.cuda.is_available():
         device = 'cuda'
@@ -351,9 +351,9 @@ def main(mode, input_feature_type, encoder_type, use_custom_decimation_func, use
             valid_data_list = dev_data_list[int(
                 round(len(dev_data_list) * train_ratio)):]
             tensorboard_dir = os.path.join(
-                "tensorboard", "{0:%Y%m%d%H%M}".format(now), f"testNo0{test_num}")
+                "..\\tensorboard", "{0:%Y%m%d%H%M}".format(now), f"testNo0{test_num}")
             model_dir = os.path.join(
-                "model", "{0:%Y%m%d%H%M}".format(now), f"testNo0{test_num}")
+                "..\\model", "{0:%Y%m%d%H%M}".format(now), f"testNo0{test_num}")
             train(mode, input_feature_type, encoder_type, use_custom_decimation_func, use_conv_stack, use_galoss, test_num, train_data_list, valid_data_list, tensorboard_dir, model_dir,
                   epoch, lr, d_model, encoder_heads, encoder_layers, n_cores, device, n_bins, hop_length, sr)
     else:
@@ -363,7 +363,10 @@ def main(mode, input_feature_type, encoder_type, use_custom_decimation_func, use
 
 
 if __name__ == "__main__":
-    with open("src/config.yaml") as f:
+    if torch.cuda.is_available():
+        print("false")
+
+    with open("config.yaml") as f:
         obj = yaml.safe_load(f)
         hop_length = obj["hop_length"]
         sr = obj["down_sampling_rate"]
