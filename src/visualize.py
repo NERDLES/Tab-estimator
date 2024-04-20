@@ -214,7 +214,7 @@ def visualize(npz_filename_list, kwargs):
                 else:
                     plt.axvline(n_note, color='white', lw=0.2)
             plt.xticks([i for i in range(0, n_note) if i % note_resolution == 0],
-                       labels=[i for i in range(0, n_note//note_resolution+1)])
+                       labels=[i for i in range(0, n_note//note_resolution)])
             plt.yticks([8, 20, 32], ['C3', 'C4', 'C5'])
             plt.xlabel('Bar number')
             plt.ylabel('pitch')
@@ -245,19 +245,21 @@ def visualize(npz_filename_list, kwargs):
 
 def main():
     parser = argparse.ArgumentParser(description='code for plotting results')
-    parser.add_argument("model", type=str,
-                        help="name of trained model: ex) 202201010000")
-    parser.add_argument("epoch", type=int,
-                        help="number of model epoch to use: ex) 64")
+    parser.add_argument("-model", type=str,
+                        help="name of trained model: ex) 202201010000",
+                        default = "202404201630")
+    parser.add_argument("-epoch", type=int,
+                        help="number of model epoch to use: ex) 64",
+                        default = 64)
     parser.add_argument("-v", "--verbose", help="option for verbosity: -v to turn on verbosity",
                         action="store_true", required=False, default=False)
-    args = parser.parse_args()
+    args = parser.parse_args(args=[])
 
     trained_model = args.model
     use_model_epoch = args.epoch
     verbose = args.verbose
 
-    config_path = os.path.join("model", f"{trained_model}", "config.yaml")
+    config_path = os.path.join("..\\model", f"{trained_model}", "config.yaml")
     with open(config_path) as f:
         obj = yaml.safe_load(f)
         note_resolution = obj["note_resolution"]

@@ -69,7 +69,7 @@ def calc_score(test_num, trained_model, use_model_epoch, config_path, plot_resul
         "hop_length": hop_length,
         "bins_per_octave": bins_per_octave
     }
-    model_path = f"model/{trained_model}/testNo0{test_num}/epoch{use_model_epoch}.model"
+    model_path = f"../model/{trained_model}/testNo0{test_num}/epoch{use_model_epoch}.model"
     existing_dev_files = glob.glob(f"visualize/dev/attn_map/0{test_num}/*")
     for f in existing_dev_files:
         os.remove(f)
@@ -93,7 +93,7 @@ def calc_score(test_num, trained_model, use_model_epoch, config_path, plot_resul
         note_sum_F0_from_tab_precision, note_sum_F0_from_tab_recall, note_sum_F0_from_tab_f1 = 0, 0, 0
         frame_sum_tdr, note_sum_tdr = 0, 0
     test_data_path = os.path.join(
-        "data", "npz", f"original", "split", f"0{test_num}_*.npz")
+        "../data", "npz", f"original", "split", f"0{test_num}_*.npz")
     test_data_list = np.array(glob.glob(test_data_path, recursive=True))
     # every test file for loop start
     frame_concat_pred = np.array([])
@@ -340,13 +340,15 @@ def calc_score(test_num, trained_model, use_model_epoch, config_path, plot_resul
 def main():
     parser = argparse.ArgumentParser(
         description='code for predicting and saving results')
-    parser.add_argument("model", type=str,
-                        help="name of trained model: ex) 202201010000")
-    parser.add_argument("epoch", type=int,
-                        help="number of model epoch to use: ex) 64")
+    parser.add_argument("-model", type=str,
+                        help="name of trained model: ex) 202201010000",
+                        default = "202404201630")
+    parser.add_argument("-epoch", type=int,
+                        help="number of model epoch to use: ex) 64",
+                        default = 64)
     parser.add_argument("-v", "--verbose", help="option for verbosity: -v to turn on verbosity",
                         action="store_true", required=False, default=False)
-    args = parser.parse_args()
+    args = parser.parse_args(args=[])
 
     trained_model = args.model
     use_model_epoch = args.epoch
@@ -361,7 +363,7 @@ def main():
     make_notelvl_from_framelvl = False
 
     result = pd.DataFrame()
-    config_path = os.path.join("model", f"{trained_model}", "config.yaml")
+    config_path = os.path.join("..\\model", f"{trained_model}", "config.yaml")
 
     with open(config_path) as f:
         obj = yaml.safe_load(f)
@@ -371,9 +373,9 @@ def main():
                             f"_epoch{use_model_epoch}", "metrics.csv")
     for test_num in range(6):
         print(f"Player No. {test_num}")
-        result = result.append(calc_score(test_num, trained_model, use_model_epoch, config_path, plot_results=plot_results,
+        result = result._append(calc_score(test_num, trained_model, use_model_epoch, config_path, plot_results=plot_results,
                                           input_as_random_noize=input_as_random_noize, make_notelvl_from_framelvl=make_notelvl_from_framelvl, verbose=verbose))
-    result = result.append(result.describe()[1:3])
+    result = result._append(result.describe()[1:3])
     result.to_csv(csv_path, float_format="%.3f")
     return
 
